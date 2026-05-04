@@ -1,6 +1,5 @@
 # Rokid Lansweeper HUD
 
-
 > **🔵 Connectivity Update — May 2025**
 > The glasses connection has been migrated from **raw TCP sockets** to
 > **Bluetooth via the Rokid AI glasses SDK** (`pod 'RokidSDK' ~> 1.10.2`).
@@ -9,7 +8,7 @@
 iOS app that bridges **Lansweeper Help Desk** with **Rokid AR glasses** — bidirectional ticket monitoring and asset lookup.
 
 ```
-👓 Glasses query / 📱 iPhone monitor
+👓 Voice command / 📱 iPhone monitor
          ↓
   iPhone (RokidLansweeper)
          ↓  GraphQL API
@@ -38,33 +37,33 @@ Alerts fire instantly on your glasses when:
 | **Detailed** | Full details of the most urgent open ticket |
 | **Minimal** | Critical + High counts only |
 
-## Glasses → Phone commands (TCP :8097)
+## Voice commands from the glasses
 
-Send any of these over TCP to trigger an instant response:
+Speak any of these into the glasses microphone — the Rokid SDK delivers them via `onAsrResult()`:
 
-| Command | Result |
-|---------|--------|
-| `QUERY: ticket 123` | Look up ticket #123 by case number |
-| `QUERY: asset PC01` | Search assets matching "PC01" |
-| `QUERY: critical` | Show all critical open tickets |
-| `QUERY: high` | Show all high priority tickets |
-| `QUERY: overdue` | Show overdue tickets |
-| `QUERY: unassigned` | Show unassigned active tickets |
-| `QUERY: summary` | Push current summary to glasses |
-| `QUERY: refresh` | Reload data from Lansweeper API |
+| What you say | Result |
+|--------------|--------|
+| `ticket 123` | Look up ticket #123 by case number |
+| `asset PC01` | Search assets matching "PC01" |
+| `critical` | Show all critical open tickets |
+| `high` | Show all high priority tickets |
+| `overdue` | Show overdue tickets |
+| `unassigned` | Show unassigned active tickets |
+| `summary` | Push current summary to glasses |
+| `refresh` | Reload data from Lansweeper API |
 
-Plain text lines are also accepted as queries.
+## Data sent to the glasses
 
-## Phone → Glasses packet types
+Messages are sent via `RokidMobileSDK.vui.sendMessage(topic:text:to:)`. The topic values map to display layouts on the glasses:
 
-```json
-{"type":"helpdesk", "text":"🎫 12 active  🔴2 🟠4 🟡5 🟢1"}
-{"type":"alert",    "text":"⚠️ [NEW CRITICAL] 🔴 #1042: DB server down"}
-{"type":"ticket",   "text":"🔴 #1042 [OPEN]\nDB server down\n👤 John Doe"}
-{"type":"asset",    "text":"PC01 · 192.168.1.10 · Windows 11 [Active]"}
-{"type":"status",   "text":"🔍 Looking up #1042…"}
-{"type":"error",    "text":"❌ Invalid token"}
-```
+| Topic | Example text |
+|-------|-------------|
+| `helpdesk` | `🎫 12 active  🔴2 🟠4 🟡5 🟢1` |
+| `alert` | `⚠️ [NEW CRITICAL] 🔴 #1042: DB server down` |
+| `ticket` | `🔴 #1042 [OPEN]\nDB server down\n👤 John Doe` |
+| `asset` | `PC01 · 192.168.1.10 · Windows 11 [Active]` |
+| `status` | `🔍 Looking up #1042…` |
+| `error` | `❌ Invalid token` |
 
 ## SDK Setup
 
@@ -72,7 +71,7 @@ The glasses now connect over **Bluetooth via the Rokid AI glasses SDK** — no W
 
 The only thing left for each app is filling in the three credential constants (`kAppKey`, `kAppSecret`, `kAccessKey`) from [account.rokid.com/#/setting/prove](https://account.rokid.com/#/setting/prove), then running `pod install`.
 
-1. **Get credentials** at <https://account.rokid.com/#/setting/prove> and paste them into the glasses Swift file:
+1. **Get credentials** at <https://account.rokid.com/#/setting/prove> and paste them into `RokidLansweeper/Glasses/GlassesServer.swift`:
    ```swift
    private let kAppKey    = "YOUR_APP_KEY"
    private let kAppSecret = "YOUR_APP_SECRET"
@@ -85,18 +84,17 @@ The only thing left for each app is filling in the three credential constants (`
    open *.xcworkspace   # always open the .xcworkspace, not .xcodeproj
    ```
 
-3. *(Glasses now connect automatically over Bluetooth — no TCP port needed.)*
+3. **Pair your glasses** once in the Rokid companion app — the SDK auto-connects over Bluetooth every launch.
 
 ## Setup
 
-1. Open `RokidLansweeper.xcodeproj` in Xcode 15+.
+1. Open `RokidLansweeper.xcworkspace` in Xcode 15+ (after running `pod install`).
 2. Set your team in Signing & Capabilities.
 3. Build and run on iPhone (iOS 17+).
 4. In **Settings**:
    - Paste your **Personal Access Token** (create one at [app.lansweeper.com](https://app.lansweeper.com) → Profile → API Access Tokens)
    - Tap **Load sites from API** and select your site
    - Enter your email address for "Assigned to Me" filtering
-5. *(Glasses now connect automatically over Bluetooth — no TCP port needed.)*
 
 ## Lansweeper API
 
@@ -132,6 +130,7 @@ Content-Type: application/json
 
 - iOS 17.0+
 - Xcode 15+
+- CocoaPods 1.15+ — run `pod install` after cloning
 - Lansweeper Personal Access Token ([app.lansweeper.com](https://app.lansweeper.com))
 - Lansweeper site with Help Desk enabled
-- Rokid AR glasses on the same Wi-Fi (optional — app works standalone as a ticket dashboard)
+- Rokid AI glasses (paired via Bluetooth — no Wi-Fi needed)
