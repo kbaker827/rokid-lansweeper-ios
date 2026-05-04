@@ -66,6 +66,27 @@ Plain text lines are also accepted as queries.
 {"type":"error",    "text":"❌ Invalid token"}
 ```
 
+## SDK Setup
+
+The glasses now connect over **Bluetooth via the Rokid AI glasses SDK** — no Wi-Fi port or TCP server needed.
+
+The only thing left for each app is filling in the three credential constants (`kAppKey`, `kAppSecret`, `kAccessKey`) from [account.rokid.com/#/setting/prove](https://account.rokid.com/#/setting/prove), then running `pod install`.
+
+1. **Get credentials** at <https://account.rokid.com/#/setting/prove> and paste them into the glasses Swift file:
+   ```swift
+   private let kAppKey    = "YOUR_APP_KEY"
+   private let kAppSecret = "YOUR_APP_SECRET"
+   private let kAccessKey = "YOUR_ACCESS_KEY"
+   ```
+
+2. **Install CocoaPods dependencies** from the repo root:
+   ```bash
+   pod install
+   open *.xcworkspace   # always open the .xcworkspace, not .xcodeproj
+   ```
+
+3. *(Glasses now connect automatically over Bluetooth — no TCP port needed.)*
+
 ## Setup
 
 1. Open `RokidLansweeper.xcodeproj` in Xcode 15+.
@@ -75,7 +96,7 @@ Plain text lines are also accepted as queries.
    - Paste your **Personal Access Token** (create one at [app.lansweeper.com](https://app.lansweeper.com) → Profile → API Access Tokens)
    - Tap **Load sites from API** and select your site
    - Enter your email address for "Assigned to Me" filtering
-5. Connect Rokid glasses to the same Wi-Fi; point TCP client at `<phone-ip>:8097`.
+5. *(Glasses now connect automatically over Bluetooth — no TCP port needed.)*
 
 ## Lansweeper API
 
