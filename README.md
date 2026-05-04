@@ -1,5 +1,11 @@
 # Rokid Lansweeper HUD
 
+
+> **🔵 Connectivity Update — May 2025**
+> The glasses connection has been migrated from **raw TCP sockets** to
+> **Bluetooth via the Rokid AI glasses SDK** (`pod 'RokidSDK' ~> 1.10.2`).
+> No Wi-Fi port forwarding is needed. See **SDK Setup** below.
+
 iOS app that bridges **Lansweeper Help Desk** with **Rokid AR glasses** — bidirectional ticket monitoring and asset lookup.
 
 ```
@@ -9,7 +15,7 @@ iOS app that bridges **Lansweeper Help Desk** with **Rokid AR glasses** — bidi
          ↓  GraphQL API
   api.lansweeper.com
          ↓  ticket & asset data
-  iPhone ──TCP :8097──▶ Rokid Glasses (live HUD)
+  iPhone ──Bluetooth/RokidSDK──▶ Rokid Glasses (live HUD)
 ```
 
 ## What appears on the glasses
